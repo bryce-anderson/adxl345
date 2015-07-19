@@ -22,13 +22,12 @@ static int dev_addr = 0x53;
 std::string AccelData::toString() {
   std::stringstream ss;
   ss << "Accel x: " << x << " y: " << y << " z: " << z;
-
   return ss.str();
 }
 
 void ADXL345::setScale(Scale scale) {
   char old = readRegister(DATA_FORMAT);
-  char bits = scale & (old & (~0x3));
+  char bits = scale | (old & (~0x3));
   writeRegister(DATA_FORMAT, bits);
 }
 
@@ -94,9 +93,9 @@ AccelData ADXL345::readData() {
 
   readRegisters(DATAX0, buff, 6, true); 
   
-  result.x = ((int)buff[0]) | (buff[1] << 8);
-  result.y = ((int)buff[2]) | (buff[3] << 8);
-  result.z = ((int)buff[4]) | (buff[5] << 8);
+  result.x = ((int)buff[0]) | ((int)buff[1] << 8);
+  result.y = ((int)buff[2]) | ((int)buff[3] << 8);
+  result.z = ((int)buff[4]) | ((int)buff[5] << 8);
 
   return result;
 }
