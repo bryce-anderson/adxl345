@@ -1,4 +1,0 @@
-// config declares
-
-#define RASPI
-

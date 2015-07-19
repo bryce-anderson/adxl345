@@ -1,4 +1,4 @@
-#include "ADXL345.hpp"
+#include "ADXL345Pi.hpp"
 
 #include <iostream>
 #include <stdlib.h>
@@ -20,7 +20,7 @@ int main() {
   cout << "Attempting to measure from ADX345.\n";
 
   try {
-    ADXL345 sensor(1, Scale_8G);
+    ADXL345Pi sensor(1, Scale_8G);
     sensor.activate();
 
     while (!stopI2C) {

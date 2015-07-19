@@ -4,6 +4,10 @@
 
 #include <string>
 
+#define DEVADDR 0x53
+
+
+
 enum Scale {
   Scale_2G  = 0x0,
   Scale_4G  = 0x1,
@@ -36,8 +40,6 @@ struct AccelData {
 
 class ADXL345 {
 public:
-  ADXL345(int bus, Scale scale = Scale_8G);
-
   virtual ~ADXL345();
 
   void setScale(Scale scale);
@@ -45,18 +47,18 @@ public:
   void activate();
   void standby();
 
+protected:
+  void initialize(Scale scale = Scale_8G);
+
 private:
-  int handle;
   Scale scale;
 
-  void writeAddress(char reg);
 
-  int readRegisters(char start, char* buff, int size, bool all = true);
   char readRegister(char register);
-
   void writeRegister(char reg, char value);
-  void writeRegisters(char reg, char* buff, int size);
-
+  
+  virtual int readRegisters(char start, char* buff, int size, bool all = true) = 0;
+  virtual void writeRegisters(char reg, char* buff, int size) = 0;
 };
 
 
