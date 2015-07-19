@@ -73,13 +73,8 @@ ADXL345::~ADXL345() {
 
 void ADXL345::activate() {
   char old = readRegister(POWER_CTL);
-  std::cout << "DEBUG: old reg: " << (int)old << std::endl;
   char next = old | (1 << 3);
-  std::cout << "DEBUG: next reg: " << (int)next << std::endl;
   writeRegister(POWER_CTL, next);
-
-  old = readRegister(POWER_CTL);
-  std::cout << "DEBUG: old reg: " << (int)old << std::endl;
 }
 
 void ADXL345::standby() {
