@@ -1,3 +1,4 @@
+#include "config.h"
 
 #include "ADXL345.hpp"
 
@@ -100,11 +101,28 @@ AccelData ADXL345::readData() {
   return result;
 }
 
-void ADXL345::writeAddress(char reg) {
-  if (write(handle, &reg, 1) != 1) {
-    throw std::string("Failed to write register address.");
+char ADXL345::readRegister(char reg) {
+  char buff = 0;
+  int numread = readRegisters(reg, &buff, 1);
+  if (numread == 1) 
+    return buff;
+  else {
+    throw std::string("Failed to read register.");
   }
 }
+
+void ADXL345::writeAddress(char reg) {
+  writeRegisters(reg, NULL, 0);
+}
+
+void ADXL345::writeRegister(char reg, char value) {
+  writeRegisters(reg, &value, 1);
+}
+
+
+// The following need to be abstracted between bus interfaces
+
+#ifdef RASPI
 
 int ADXL345::readRegisters(char start, char* buff, int size, bool all)  {
   writeAddress(start);
@@ -116,18 +134,19 @@ int ADXL345::readRegisters(char start, char* buff, int size, bool all)  {
   else return size;
 }
 
-char ADXL345::readRegister(char reg) {
-  char buff = 0;
-  int numread = readRegisters(reg, &buff, 1);
-  if (numread == 1) 
-    return buff;
-  else {
-    throw std::string("Failed to read register.");
-  }
-}
-
 void ADXL345::writeRegisters(char reg, char* buff, int size) {
-  char* all = new char[size+1];
+  char towrite[24];
+  bool noalloc = size < 24;
+
+  char* all;
+
+  if (noalloc) {
+    all = towrite;
+  }
+  else {
+    all = new char[size+1];
+  }
+
   all[0] = reg;
 
   for (int i = 0; i < size; i++) {
@@ -135,16 +154,15 @@ void ADXL345::writeRegisters(char reg, char* buff, int size) {
   }
 
   int written = write(handle, all, size+1);
-  delete all;
+  
+  if (!noalloc) {
+    delete all;
+  }
   all = 0;
   
   if (written != size+1) {
     throw std::string("Failed to write data.");
   }
-}
-
-void ADXL345::writeRegister(char reg, char value) {
-  writeRegisters(reg, &value, 1);
 }
 
 int set_slave_addr(int file, int address, int force) {
@@ -158,4 +176,4 @@ int set_slave_addr(int file, int address, int force) {
   }
 }
 
-
+#endif // RASPI
