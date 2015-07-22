@@ -1,5 +1,5 @@
 
-#include "ADXL345Pi.hpp"
+#include "ADXL345PiI2C.hpp"
 
 #include <errno.h>
 #include <stdio.h>

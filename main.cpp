@@ -1,4 +1,4 @@
-#include "ADXL345Pi.hpp"
+#include "ADXL345PiI2C.hpp"
 
 #include <iostream>
 #include <stdlib.h>
