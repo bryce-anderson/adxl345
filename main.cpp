@@ -21,8 +21,8 @@ int main() {
   cout << "Attempting to measure from ADX345.\n";
 
   try {
-    ADXL345PiI2C sensor(1, Scale_8G);
-    //ADXL345PiSPI sensor(0, Scale_8G);
+    //ADXL345PiI2C sensor(1, Scale_8G);
+    ADXL345PiSPI sensor(0, Scale_8G);
     sensor.activate();
 
     while (!stopI2C) {

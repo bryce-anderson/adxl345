@@ -14,6 +14,7 @@ ADXL345::~ADXL345() {}
 
 void ADXL345::setScale(Scale scale) {
   uint8_t old = readRegister(DATA_FORMAT);
+  std::cout << "DEUBUG: old scale: " << (int)old << std::endl;
   uint8_t bits = scale | (old & (~0x3));
   writeRegister(DATA_FORMAT, bits);
 }
@@ -28,7 +29,6 @@ void ADXL345::initialize(Scale scale) {
   }
 
   setScale(scale);
-
   this->scale = scale;
 }
 

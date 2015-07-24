@@ -61,8 +61,8 @@ ADXL345PiSPI::~ADXL345PiSPI() {
   }
 }
 
-size_t ADXL345PiSPI::readRegisters(uint8_t start, uint8_t* buff, size_t size, bool all)  {
-  adxtrans(handle, true, start, buff, size);
+size_t ADXL345PiSPI::readRegisters(uint8_t reg, uint8_t* buff, size_t size, bool all)  {
+  adxtrans(handle, true, reg, buff, size);
   return size;
 }
 
@@ -71,7 +71,7 @@ void ADXL345PiSPI::writeRegisters(uint8_t reg, uint8_t* buff, size_t size) {
 }
 
 static bool configBus(int file) {
-  const uint32_t mode = 0;
+  const uint32_t mode = SPI_MODE_3;
   const uint32_t speed = speed;
 
   // set the mode
@@ -82,15 +82,12 @@ static bool configBus(int file) {
     throw std::string("Error setting spi RD mode");
 
   // bits per word
-  uint8_t bits = 8;
-  if (ioctl(file, SPI_IOC_WR_BITS_PER_WORD, &bits) == -1)
+  uint8_t wrbits = bits;
+  if (ioctl(file, SPI_IOC_WR_BITS_PER_WORD, &wrbits) == -1)
     throw std::string("Error setting spi WR bits per word");
 
-  std::cout << "Bits: " << (int)bits << std::endl;
-  uint8_t bits2 = 8;
-
-  if (ioctl(file, SPI_IOC_RD_BITS_PER_WORD, &bits2) == -1) {
-    std::cout << "Bits: " << (int)bits << std::endl;
+  uint8_t rdbits = bits;
+  if (ioctl(file, SPI_IOC_RD_BITS_PER_WORD, &rdbits) == -1) {
     throw std::string("Error setting spi RD bits per word");
   }
 
@@ -119,7 +116,9 @@ static void adxtrans(int fd, bool isread, uint8_t reg, uint8_t *buf, size_t len)
     all = new uint8_t[len+1];
   }
 
-  all[0] = reg & 0x1f;
+  memset(all, 0, len+1);
+
+  all[0] = reg & 0x3f;
 
   if (isread) {
     all[0] |= (0x1 << 7);
@@ -130,17 +129,15 @@ static void adxtrans(int fd, bool isread, uint8_t reg, uint8_t *buf, size_t len)
     all[0] |= (0x1 << 6);
   }
 
-  // copy to the buffer
-  for (size_t i = 0; i < len; i++) {
-    all[i+1] = buf[i];
-  }
+  // copy to the buffer to the one going to the kernel
+  if (!isread)
+    memcpy(all+1, buf, len);
 
   transfer(fd, all, all, len+1);
 
-  // copy to the buffer
-  for (size_t i = 0; i < len; i++) {
-    buf[i] = all[i+1];
-  }
+  // copy to the buffer back
+  if (isread)
+    memcpy(buf, all+1, len);
  
   if (!noalloc) {
     delete all;
@@ -150,20 +147,19 @@ static void adxtrans(int fd, bool isread, uint8_t reg, uint8_t *buf, size_t len)
 
 static void transfer(int fd, uint8_t const *tx, uint8_t const *rx, size_t len)
 {
-	int ret;
-
 	struct spi_ioc_transfer tr;
+	memset(&tr, 0, sizeof(tr));
 
         tr.tx_buf = (unsigned long)tx;
 	tr.rx_buf = (unsigned long)rx;
 	tr.len = len;
-	tr.cs_change = 1;
+	tr.cs_change = 0;
 	tr.delay_usecs = delay;
 	tr.speed_hz = speed;
 	tr.bits_per_word = bits;
 
 
-	ret = ioctl(fd, SPI_IOC_MESSAGE(1), &tr);
+	int ret = ioctl(fd, SPI_IOC_MESSAGE(1), &tr);
 	if (ret < 1)
 		throw std::string("can't send spi message");
 }

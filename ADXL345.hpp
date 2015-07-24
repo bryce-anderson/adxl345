@@ -17,7 +17,9 @@ enum Scale {
 
 enum {
   DEVID       = 0x00,
+  BW_RATE     = 0x2c,
   POWER_CTL   = 0x2d,
+  INT_SOURCE  = 0x30,
   DATA_FORMAT = 0x31,
   DATAX0      = 0x32,
   DATAX1      = 0x33,
