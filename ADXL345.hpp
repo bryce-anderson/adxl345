@@ -54,11 +54,11 @@ private:
   Scale scale;
 
 
-  char readRegister(char register);
-  void writeRegister(char reg, char value);
+  uint8_t readRegister(uint8_t register);
+  void writeRegister(uint8_t reg, uint8_t value);
   
-  virtual int readRegisters(char start, char* buff, int size, bool all = true) = 0;
-  virtual void writeRegisters(char reg, char* buff, int size) = 0;
+  virtual size_t readRegisters(uint8_t startreg, uint8_t* buff, size_t size, bool all = true) = 0;
+  virtual void writeRegisters(uint8_t reg, uint8_t* buff, size_t size) = 0;
 };
 
 

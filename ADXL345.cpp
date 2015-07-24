@@ -1,6 +1,7 @@
 
 #include "ADXL345.hpp"
 #include <sstream>
+#include <iostream>
 
 
 std::string AccelData::toString() {
@@ -12,15 +13,17 @@ std::string AccelData::toString() {
 ADXL345::~ADXL345() {}
 
 void ADXL345::setScale(Scale scale) {
-  char old = readRegister(DATA_FORMAT);
-  char bits = scale | (old & (~0x3));
+  uint8_t old = readRegister(DATA_FORMAT);
+  uint8_t bits = scale | (old & (~0x3));
   writeRegister(DATA_FORMAT, bits);
 }
 
 void ADXL345::initialize(Scale scale) {
 
   // Check the identity of the device
-  if (readRegister(DEVID) != 0xe5) {
+  uint8_t reg = readRegister(DEVID);
+  if (reg != 0xe5) {
+    std::cerr << "Wrong device id: " << (int)reg << std::endl;
     throw std::string("This address doesn't belong to an ADXL345 accelerometer.");
   }
 
@@ -30,20 +33,20 @@ void ADXL345::initialize(Scale scale) {
 }
 
 void ADXL345::activate() {
-  char old = readRegister(POWER_CTL);
-  char next = old | (1 << 3);
+  uint8_t old = readRegister(POWER_CTL);
+  uint8_t next = old | (1 << 3);
   writeRegister(POWER_CTL, next);
 }
 
 void ADXL345::standby() {
-  char old = readRegister(POWER_CTL);
-  char next = old & (~(1 << 3));
+  uint8_t old = readRegister(POWER_CTL);
+  uint8_t next = old & (~(1 << 3));
   writeRegister(POWER_CTL, next);
 }
 
 AccelData ADXL345::readData() {
   AccelData result;
-  char buff[6];
+  uint8_t buff[6];
 
   readRegisters(DATAX0, buff, 6, true); 
   
@@ -54,8 +57,8 @@ AccelData ADXL345::readData() {
   return result;
 }
 
-char ADXL345::readRegister(char reg) {
-  char buff = 0;
+uint8_t ADXL345::readRegister(uint8_t reg) {
+  uint8_t buff = 0;
   int numread = readRegisters(reg, &buff, 1);
   if (numread == 1) 
     return buff;
@@ -64,7 +67,7 @@ char ADXL345::readRegister(char reg) {
   }
 }
 
-void ADXL345::writeRegister(char reg, char value) {
+void ADXL345::writeRegister(uint8_t reg, uint8_t value) {
   writeRegisters(reg, &value, 1);
 }
 

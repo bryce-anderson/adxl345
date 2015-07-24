@@ -1,22 +1,20 @@
-#ifndef ADXL345PI_HPP_
-#define ADXL345PI_HPP_
+#ifndef __ADXL345PI_I2C_HPP__
+#define __ADXL345PI_I2C_HPP__
 
 #include "ADXL345.hpp"
 
-#include <linux/i2c-dev.h>
 
-class ADXL345Pi: public ADXL345 {
+class ADXL345PiI2C: public ADXL345 {
 public:
-  ADXL345Pi(int bus, Scale scale = Scale_8G);
-  virtual ~ADXL345Pi();
+  ADXL345PiI2C(int bus, Scale scale = Scale_8G);
+  virtual ~ADXL345PiI2C();
 
 private:
   int handle;
-  void writeAddress(char reg);
-  virtual int readRegisters(char start, char* buff, int size, bool all = true);
-  virtual void writeRegisters(char reg, char* buff, int size);
+  void writeAddress(uint8_t reg);
+  virtual size_t readRegisters(uint8_t start, uint8_t* buff, size_t size, bool all = true);
+  virtual void writeRegisters(uint8_t reg, uint8_t* buff, size_t size);
 };
 
 
-#endif // ADXL345PI_HPP_
-
+#endif // __DXL345PI_I2C_HPP__

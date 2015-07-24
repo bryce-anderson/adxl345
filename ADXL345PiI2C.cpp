@@ -11,12 +11,12 @@
 #include <sstream>
 #include <iostream>
 
-
+#include <linux/i2c-dev.h>
 
 // some forward declarations
 int set_slave_addr(int file, int address, int force);
 
-ADXL345Pi::ADXL345Pi(int i2cbus, Scale scale) {
+ADXL345PiI2C::ADXL345PiI2C(int i2cbus, Scale scale) {
   char filename[64];
   int file;
 
@@ -41,16 +41,16 @@ ADXL345Pi::ADXL345Pi(int i2cbus, Scale scale) {
   initialize();
 }
 
-ADXL345Pi::~ADXL345Pi() {
+ADXL345PiI2C::~ADXL345PiI2C() {
   if (handle != 0) {
     close(handle);
     handle = 0;
   }
 }
 
-int ADXL345Pi::readRegisters(char start, char* buff, int size, bool all)  {
+size_t ADXL345PiI2C::readRegisters(uint8_t start, uint8_t* buff, size_t size, bool all)  {
   writeAddress(start);
-  int size_read = read(handle, buff, size);
+  size_t size_read = read(handle, buff, size);
  
   if (all && size != size_read) {
     throw std::string("Failed to read all bytes");
@@ -58,26 +58,26 @@ int ADXL345Pi::readRegisters(char start, char* buff, int size, bool all)  {
   else return size;
 }
 
-void ADXL345Pi::writeRegisters(char reg, char* buff, int size) {
-  char towrite[24];
+void ADXL345PiI2C::writeRegisters(uint8_t reg, uint8_t* buff, size_t size) {
+  uint8_t towrite[24];
   bool noalloc = size < 24;
 
-  char* all;
+  uint8_t* all;
 
   if (noalloc) {
     all = towrite;
   }
   else {
-    all = new char[size+1];
+    all = new uint8_t[size+1];
   }
 
   all[0] = reg;
 
-  for (int i = 0; i < size; i++) {
+  for (size_t i = 0; i < size; i++) {
     all[i+1] = buff[i];
   }
 
-  int written = write(handle, all, size+1);
+  size_t written = write(handle, all, size+1);
   
   if (!noalloc) {
     delete all;
@@ -89,7 +89,7 @@ void ADXL345Pi::writeRegisters(char reg, char* buff, int size) {
   }
 }
 
-void ADXL345Pi::writeAddress(char reg) {
+void ADXL345PiI2C::writeAddress(uint8_t reg) {
   writeRegisters(reg, NULL, 0);
 }
 
