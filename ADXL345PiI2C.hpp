@@ -14,6 +14,8 @@ private:
   void writeAddress(uint8_t reg);
   virtual size_t readRegisters(uint8_t start, uint8_t* buff, size_t size, bool all = true);
   virtual void writeRegisters(uint8_t reg, uint8_t* buff, size_t size);
+  virtual void fatalError(std::string error);
+  virtual void debug(std::string msg);
 };
 
 

@@ -2,7 +2,6 @@
 #include "ADXL345PiI2C.hpp"
 
 #include <errno.h>
-#include <stdio.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <string.h>
@@ -91,6 +90,14 @@ void ADXL345PiI2C::writeRegisters(uint8_t reg, uint8_t* buff, size_t size) {
 
 void ADXL345PiI2C::writeAddress(uint8_t reg) {
   writeRegisters(reg, NULL, 0);
+}
+
+void ADXL345PiI2C::fatalError(std::string error) {
+  throw error;
+}
+
+void ADXL345PiI2C::debug(std::string msg) {
+  std::cout << "DEBUG: " << msg << std::endl;
 }
 
 

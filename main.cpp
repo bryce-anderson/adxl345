@@ -21,9 +21,11 @@ int main() {
   cout << "Attempting to measure from ADX345.\n";
 
   try {
-    //ADXL345PiI2C sensor(1, Scale_8G);
-    ADXL345PiSPI sensor(0, Scale_8G);
-    sensor.activate();
+    //ADXL345PiI2C sensor(1, Scale_FullRes);
+    ADXL345PiSPI sensor(0, Scale_FullRes);
+    sensor.zeroOffsets();
+    //sensor.initOffset();
+    sensor.setActive(true);
 
     while (!stopI2C) {
       usleep(10*1000);
@@ -31,7 +33,7 @@ int main() {
     }
 
     cout << "Shutting down." << endl;
-    sensor.standby();
+    sensor.setActive(false);
   }
   catch (const string& str) {
     cerr << "Failed: " << str << endl;

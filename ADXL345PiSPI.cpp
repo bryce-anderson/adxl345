@@ -1,5 +1,5 @@
 
-// http://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/plain/Documentation/spi/spidev_test.c
+// See http://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/plain/Documentation/spi/spidev_test.c for some examples of how to use the linux SPI interface
 
 #include "ADXL345PiSPI.hpp"
 
@@ -68,6 +68,14 @@ size_t ADXL345PiSPI::readRegisters(uint8_t reg, uint8_t* buff, size_t size, bool
 
 void ADXL345PiSPI::writeRegisters(uint8_t reg, uint8_t* buff, size_t size) {
   adxtrans(handle, false, reg, buff, size);
+}
+
+void ADXL345PiSPI::fatalError(std::string error) {
+  throw error;
+}
+
+void ADXL345PiSPI::debug(std::string msg) {
+  std::cout << "DEBUG: " << msg << std::endl;
 }
 
 static bool configBus(int file) {
