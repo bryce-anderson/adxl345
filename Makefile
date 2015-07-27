@@ -1,6 +1,6 @@
 CXX = g++
 
-CXXFLAGS= -Wall -Werror -std=c++0x
+CXXFLAGS= -Wall -Werror
 
 OBJ = main.o ADXL345.o ADXL345PiI2C.o ADXL345PiSPI.o
 

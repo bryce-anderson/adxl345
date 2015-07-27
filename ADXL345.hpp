@@ -3,6 +3,8 @@
 #define ADXL345_HPP_
 
 #include <string>
+#include <stddef.h>
+#include <stdint.h>
 
 #define DEVADDR 0x53
 
@@ -112,7 +114,7 @@ private:
   void writeRegister(uint8_t reg, uint8_t value);
   int8_t checkoverflow(int32_t value);
   
-  virtual size_t readRegisters(uint8_t startreg, uint8_t* buff, size_t size, bool all = true) = 0;
+  virtual size_t readRegisters(uint8_t startreg, uint8_t* buff, size_t size) = 0;
   virtual void writeRegisters(uint8_t reg, uint8_t* buff, size_t size) = 0;
   virtual void fatalError(std::string error) = 0;
   virtual void debug(std::string msg) = 0;

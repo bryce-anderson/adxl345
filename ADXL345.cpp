@@ -11,7 +11,7 @@ std::string AccelData::toString() {
 }
 
 float tog(Scale scale, int16_t g) {
-  float conversion;
+  float conversion = 0.0f;
   switch (scale) {
     // these values come from the spec
     case Scale_FullRes: // fall through to 2G
@@ -184,7 +184,10 @@ AccelData ADXL345::readData() {
   result.scale_g = scale;
   uint8_t buff[6];
 
-  readRegisters(DATAX0, buff, 6, true); 
+  size_t read = readRegisters(DATAX0, buff, 6);
+  if (read != 6) {
+    fatalError("Failed to read all data bytes.");
+  }
   
   result.x = ((int)buff[0]) | ((int)buff[1] << 8);
   result.y = ((int)buff[2]) | ((int)buff[3] << 8);

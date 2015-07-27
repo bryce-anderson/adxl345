@@ -12,7 +12,6 @@
 #include <string>
 #include <sstream>
 #include <iostream>
-#include <cstdint>
 
 #include <sys/ioctl.h>
 #include <linux/types.h>
@@ -30,12 +29,11 @@ static const uint8_t bits = 8;
 static const uint16_t delay = 2; // us
 
 ADXL345PiSPI::ADXL345PiSPI(int spibus, Scale scale) {
-  char filename[64];
   int file;
+  std::stringstream ss;
 
-  sprintf(filename, "/dev/spidev0.%d", spibus);
-
-  file = open(filename, O_RDWR);
+  ss << "/dev/spidev0." << spibus;
+  file = open(ss.str().c_str(), O_RDWR);
 
   if (file < 0) {
     throw std::string("Error opening SPI device");
@@ -61,7 +59,7 @@ ADXL345PiSPI::~ADXL345PiSPI() {
   }
 }
 
-size_t ADXL345PiSPI::readRegisters(uint8_t reg, uint8_t* buff, size_t size, bool all)  {
+size_t ADXL345PiSPI::readRegisters(uint8_t reg, uint8_t* buff, size_t size)  {
   adxtrans(handle, true, reg, buff, size);
   return size;
 }

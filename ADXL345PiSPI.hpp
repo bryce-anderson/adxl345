@@ -10,7 +10,7 @@ public:
 
 private:
   int handle;
-  virtual size_t readRegisters(uint8_t startreg, uint8_t* buff, size_t size, bool all = true);
+  virtual size_t readRegisters(uint8_t startreg, uint8_t* buff, size_t size);
   virtual void writeRegisters(uint8_t reg, uint8_t* buff, size_t size);
   virtual void fatalError(std::string error);
   virtual void debug(std::string msg);
