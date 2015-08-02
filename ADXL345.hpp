@@ -68,9 +68,15 @@ enum Rate {
 
 
 struct AccelData {
-  int16_t x;
-  int16_t y;
-  int16_t z;
+  inline AccelData(): x(raw[0]), y(raw[1]), z(raw[2]) {}
+  inline uint8_t* getPtr() { return (uint8_t*)raw; }
+
+  static const int size = 6;
+
+  int16_t raw[3];
+  int16_t &x;
+  int16_t &y;
+  int16_t &z;
 
   Scale scale_g;
 

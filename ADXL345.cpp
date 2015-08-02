@@ -182,6 +182,7 @@ void ADXL345::setActive(bool active) {
 AccelData ADXL345::readData() {
   AccelData result;
   result.scale_g = scale;
+
   uint8_t buff[6];
 
   size_t read = readRegisters(DATAX0, buff, 6);
@@ -189,6 +190,8 @@ AccelData ADXL345::readData() {
     fatalError("Failed to read all data bytes.");
   }
   
+  // we could use the AccelData.getPtr() if we know the
+  // architecture is little endian. But we cant always be sure...
   result.x = ((int)buff[0]) | ((int)buff[1] << 8);
   result.y = ((int)buff[2]) | ((int)buff[3] << 8);
   result.z = ((int)buff[4]) | ((int)buff[5] << 8);
